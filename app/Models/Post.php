@@ -128,7 +128,7 @@ class Post extends Model
         if ($this->image) {
             $image = '/uploads/'.$this->image;
         } else {
-            $image = 'img/no-image.png';
+            $image = 'img/no-user-image.png';
         }
 
         return $image;

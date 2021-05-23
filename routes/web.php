@@ -21,7 +21,5 @@ Route::group(['prefix' => 'admin', 'namespace' => 'App\Http\Controllers\Admin'],
     Route::get('/', 'DashboardController@index');
     Route::resource('/categories', 'CategoriesController');
     Route::resource('/tag', 'TagController');
+    Route::resource('/users', 'UsersController');
 });
-
-/*Route::get('/admin', [ Admin\DashboardController::class, 'index' ]);
-Route::resource('/admin/categories', Admin\CategoriesController::class);*/

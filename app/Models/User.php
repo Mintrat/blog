@@ -53,7 +53,7 @@ class User extends Authenticatable
     }
 
     public function comments() {
-        return$this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class);
     }
 
     public static function add($fields) {
@@ -128,9 +128,12 @@ class User extends Authenticatable
     public function uploadAvatar($image) {
 
         if ($image) {
-            Storage::delete('/uploads/' . $this->image);
+            if ($this->image) {
+                Storage::delete('/uploads/' . $this->image);
+            }
+
             $filename = Str::random(10) . '.' . $image->extension();
-            $image->saveAs('/uploads/', $filename);
+            $image->storeAs('/uploads/', $filename);
             $this->image = $filename;
             $this->save();
         }
@@ -142,7 +145,7 @@ class User extends Authenticatable
         if ($this->image) {
             $image = '/uploads/'.$this->image;
         } else {
-            $image = 'img/no-user-image.png';
+            $image = '/img/no-user-image.png';
         }
 
         return $image;
