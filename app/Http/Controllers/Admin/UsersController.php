@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
@@ -42,9 +43,9 @@ class UsersController extends Controller
             'password' => 'required',
             'avatar' => 'nullable|image'
             ]);
-        $user = new User($request->all());
+        $user = User::add($request->all());
         $user->uploadAvatar($request->file('avatar'));
-        $user->save();
+
         return redirect()->route('users.index');
     }
 
@@ -67,7 +68,8 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        return view('admin.users.edit');
+        $user = User::findOrFail($id);
+        return view('admin.users.edit', [ 'user' => $user ]);
     }
 
     /**
@@ -75,11 +77,25 @@ class UsersController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($id)
+            ],
+            'avatar' => 'nullable|image'
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->edit($request->all());
+        $user->uploadAvatar($request->file('avatar'));
+
+        return redirect()->route('users.index');
     }
 
     /**

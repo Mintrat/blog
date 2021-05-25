@@ -59,26 +59,38 @@ class User extends Authenticatable
     public static function add($fields) {
         $user = new static();
         $user->fill($fields);
-        $user->password = bcrypt($fields['password']);
+        $user->generatePassword($fields['password']);
         $user->save();
 
         return $user;
     }
 
     public function edit($fields) {
-
+        $password = $fields['password'] ?? null;
+        unset($fields['password']);
         $this->fill($fields);
-        if ($fields['password']) {
-            $this->password = bcrypt($fields['password']);
-        }
+        $this->generatePassword($password);
         $this->save();
 
         return $this;
     }
 
+    public function generatePassword($password) {
+        if ($password) {
+            $this->password = bcrypt($password);
+            $this->save();
+        }
+    }
+
     public function remove() {
-        Storage::delete('uploads/' . $this->image);
+        $this->removeAvatar();
         $this->delete();
+    }
+
+    public function removeAvatar() {
+        if ($this->image) {
+            Storage::delete('uploads/' . $this->image);
+        }
     }
 
     public function toggleAdmin($value) {
@@ -128,10 +140,7 @@ class User extends Authenticatable
     public function uploadAvatar($image) {
 
         if ($image) {
-            if ($this->image) {
-                Storage::delete('/uploads/' . $this->image);
-            }
-
+            $this->removeAvatar();
             $filename = Str::random(10) . '.' . $image->extension();
             $image->storeAs('/uploads/', $filename);
             $this->image = $filename;
