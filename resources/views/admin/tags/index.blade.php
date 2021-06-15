@@ -26,7 +26,7 @@
                 <!-- /.box-header -->
                 <div class="box-body">
                     <div class="form-group">
-                        <a href="{{ route('tag.create') }}" class="btn btn-success">Добавить</a>
+                        <a href="{{ route('tags.create') }}" class="btn btn-success">Добавить</a>
                     </div>
                     <table id="example1" class="table table-bordered table-striped">
                         <thead>
@@ -41,9 +41,9 @@
                             <tr>
                                 <td>{{ $tag->id }}</td>
                                 <td>{{ $tag->title }}</td>
-                                <td><a href="{{ route('tag.edit', $tag->id) }}" class="fa fa-pencil"></a>
+                                <td><a href="{{ route('tags.edit', $tag->id) }}" class="fa fa-pencil"></a>
                                 {!! Form::open([
-                                    'route' => ['tag.destroy', $tag->id],
+                                    'route' => ['tags.destroy', $tag->id],
                                     'method' => 'delete'
                                 ])!!}
 

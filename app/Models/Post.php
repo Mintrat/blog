@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use phpDocumentor\Reflection\Types\This;
 
 
 class Post extends Model
@@ -15,33 +15,35 @@ class Post extends Model
     use HasFactory;
     use Sluggable;
 
-    protected $fillable = ['title', 'content'];
+    protected $fillable = ['title', 'content', 'date', 'description'];
     const IS_DRAFT = 0;
     const IS_PUBLIC = 1;
     const IS_FEATURED = 1;
     const IS_STANDART = 0;
+
     public function category()
     {
-        return $this->hasOne(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function author() {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function tags() {
         return $this->belongsToMany(Tag::class, 'posts_tags', 'post_id', 'tag_id');
     }
 
-    public static function add($fields) {
+    public static function add($fields)
+    {
         $post = new static();
         $post->fill($fields);
-        $post->user_id = 1;
         $post->save();
         return $post;
     }
 
-    public function setCategory($categoryID) {
+    public function setCategory($categoryID)
+    {
         if ($categoryID) {
             $this->category_id = $categoryID;
             $this->save();
@@ -49,20 +51,23 @@ class Post extends Model
         }
     }
 
-    public function setTag($tagIDs) {
+    public function setTags($tagIDs)
+    {
         if ($tagIDs) {
             $this->tags()->sync($tagIDs);
             return $this;
         }
     }
 
-    public function setDraft() {
+    public function setDraft()
+    {
         $this->status = static::IS_DRAFT;
         $this->save();
         return $this;
     }
 
-    public function setPublic() {
+    public function setPublic()
+    {
         $this->status = static::IS_PUBLIC;
         $this->save();
         return $this;
@@ -79,13 +84,15 @@ class Post extends Model
         return $this;
     }
 
-    public function setFeatured() {
-        $this->is_fetured = static::IS_FEATURED;
+    public function setFeatured()
+    {
+        $this->is_featured = static::IS_FEATURED;
         return $this;
     }
 
-    public function setStandart() {
-        $this->is_fetured = static::IS_STANDART;
+    public function setStandart()
+    {
+        $this->is_featured = static::IS_STANDART;
         return $this;
     }
 
@@ -100,38 +107,78 @@ class Post extends Model
         return $this;
     }
 
-    public function edit($fields) {
+    public function edit($fields)
+    {
         $this->fill($fields);
         $this->save();
         return $this;
     }
 
-    public function remove() {
-        Storage::delete('uploads/' . $this->image);
+    public function remove()
+    {
+        $this->removeImage();
         $this->delete();
     }
 
-    public function uploadImage($image) {
-
-        if ($image) {
-            Storage::delete('uploads/' . $this->image);
-            $filename = Str::random(10) . '.' . $image->extension();
-            $image->saveAs('uploads', $filename);
-            $this->image = $filename;
-            $this->save();
-        }
+    public function uploadImage($image)
+    {
+        if (!$image) return;
+        $this->removeImage();
+        Storage::delete('uploads/' . $this->image);
+        $filename = Str::random(10) . '.' . $image->extension();
+        $image->storeAs('uploads', $filename);
+        $this->image = $filename;
+        $this->save();
     }
 
-    public function getImage() {
-        $image = '';
+    public function getImage()
+    {
 
         if ($this->image) {
             $image = '/uploads/'.$this->image;
         } else {
-            $image = 'img/no-user-image.png';
+            $image = '/img/no-user-image.png';
         }
-
         return $image;
+    }
+
+    public function getCategoryTitle()
+    {
+        return $this->category->title ?? null;
+    }
+
+    public function getTagsTitles()
+    {
+        $tagsTitle = $this->tags()->pluck('title')->all();
+        return $tagsTitle ? implode(', ', $tagsTitle) : null;
+    }
+
+    public function removeImage()
+    {
+        if ($this->image != null) {
+            Storage::delete('uploads/' . $this->image);
+        }
+    }
+
+    public function setDateAttribute($value)
+    {
+        $date = Carbon::createFromFormat('d/m/y', $value)->format('Y-m-d');
+        $this->attributes['date'] = $date;
+    }
+
+    public function getDateAttribute($value)
+    {
+        return Carbon::createFromFormat('Y-m-d', $value)->format('d/m/y');
+    }
+
+    public function getCategoryID()
+    {
+        return $this->category ? $this->category->id : null;
+    }
+
+    public function getDate()
+    {
+        return Carbon::createFromFormat('d/m/y', $this->date)->format('F d, y');
     }
 
     public function sluggable(): array

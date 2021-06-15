@@ -15,7 +15,7 @@
 
             <!-- Default box -->
             <div class="box">
-                {{ Form::open(['route' => 'tag.store']) }}
+                {{ Form::open(['route' => 'tags.store']) }}
                 <div class="box-header with-border">
                     <h3 class="box-title">Добавляем тег</h3>
                 </div>
@@ -30,7 +30,7 @@
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer">
-                    <a href="{{ route('tag.index') }}" class="btn btn-default">Назад</a>
+                    <a href="{{ route('tags.index') }}" class="btn btn-default">Назад</a>
                     <button class="btn btn-success pull-right">Добавить</button>
                 </div>
                 <!-- /.box-footer-->

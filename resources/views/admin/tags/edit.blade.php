@@ -16,7 +16,7 @@
             <!-- Default box -->
             <div class="box">
                 {{ Form::open([
-                    'route' => ['tag.update', $tag->id],
+                    'route' => ['tags.update', $tag->id],
                     'method' => 'put'
                 ]) }}
                 <div class="box-header with-border">

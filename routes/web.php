@@ -12,14 +12,17 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-//dd(Admin\DashboardController::class);
-Route::get('/', function () {
-    return view('welcome');
-});
+
+//Route::get('/', function () {
+//    return view('welcome');
+//});
+
+Route::get('/', 'App\Http\Controllers\HomeController@index');
 
 Route::group(['prefix' => 'admin', 'namespace' => 'App\Http\Controllers\Admin'], function() {
     Route::get('/', 'DashboardController@index');
     Route::resource('/categories', 'CategoriesController');
-    Route::resource('/tag', 'TagController');
+    Route::resource('/tags', 'TagsController');
     Route::resource('/users', 'UsersController');
+    Route::resource('/posts', 'PostsController');
 });

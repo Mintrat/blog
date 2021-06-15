@@ -155,7 +155,7 @@
     padding: 0;
     width: 18px;
     height: 18px;
-    background: url(blue.png) no-repeat;
+    background: url(/img/blue.png) no-repeat;
     border: none;
     cursor: pointer;
 }
@@ -578,6 +578,7 @@
         background-size: 200px 20px;
     }
 }
+
 /*!
  * Datepicker for Bootstrap
  *
