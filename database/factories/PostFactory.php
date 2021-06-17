@@ -31,7 +31,7 @@ class PostFactory extends Factory
             'user_id' => 1,
             'status' => Post::IS_PUBLIC,
             'is_featured' => Post::IS_STANDART,
-            'description' => $this->faker->text(500),
+            'description' => $this->faker->text(5),
         ];
     }
 }

@@ -144,7 +144,12 @@ class Post extends Model
 
     public function getCategoryTitle()
     {
-        return $this->category->title ?? null;
+        return $this->hasCategory() ? $this->category->title : null;
+    }
+
+    public function hasCategory()
+    {
+        return $this->category ? true : false;
     }
 
     public function getTagsTitles()
@@ -179,6 +184,62 @@ class Post extends Model
     public function getDate()
     {
         return Carbon::createFromFormat('d/m/y', $this->date)->format('F d, y');
+    }
+
+    public function hasPreviousPost()
+    {
+        return self::where('id', '<', $this->id)->max('id');
+    }
+
+    public function getPreviousPost()
+    {
+        return Post::find($this->hasPreviousPost());
+    }
+
+    public function hasNextPost()
+    {
+        return self::where('id', '>', $this->id)->min('id');
+    }
+
+    public function getNextPost()
+    {
+        return Post::find($this->hasNextPost());
+
+    }
+
+    public function related()
+    {
+        return self::all()->except($this->id);
+    }
+
+    public static function getPopularPosts(int $count = null)
+    {
+        $posts = self::orderBy('views', 'desc')->where('status', '=', Post::IS_PUBLIC);
+        if ($count) {
+            $posts = $posts->take($count);
+        }
+
+        return $posts->get();
+    }
+
+    public static function getFeaturedPosts(int $count = null)
+    {
+        $posts = self::orderBy('views', 'desc')->where('is_featured', '=', Post::IS_FEATURED)->where('status', '=', Post::IS_PUBLIC);
+        if ($count) {
+            $posts = $posts->take($count);
+        }
+
+        return $posts->get();
+    }
+
+    public static function getRecentPosts(int $count = null)
+    {
+        $posts = self::orderBy('created_at', 'desc')->where('status', '=', Post::IS_PUBLIC);
+        if ($count) {
+            $posts = $posts->take($count);
+        }
+
+        return $posts->get();
     }
 
     public function sluggable(): array

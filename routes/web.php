@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +18,10 @@ use Illuminate\Support\Facades\Route;
 //    return view('welcome');
 //});
 
-Route::get('/', 'App\Http\Controllers\HomeController@index');
+Route::get('/', [HomeController::class, 'index']);
+Route::get('/post/{slug}', [HomeController::class, 'show'])->name('post.show');
+Route::get('/tag/{slug}', [HomeController::class, 'postsByTag'])->name('tag.show');
+Route::get('/category/{slug}', [HomeController::class, 'postByCategory'])->name('category.show');
 
 Route::group(['prefix' => 'admin', 'namespace' => 'App\Http\Controllers\Admin'], function() {
     Route::get('/', 'DashboardController@index');
