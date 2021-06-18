@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,13 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/post/{slug}', [HomeController::class, 'show'])->name('post.show');
 Route::get('/tag/{slug}', [HomeController::class, 'postsByTag'])->name('tag.show');
 Route::get('/category/{slug}', [HomeController::class, 'postByCategory'])->name('category.show');
+
+Route::get('/register', [AuthController::class, 'registerForm'])->name('register.form');
+Route::get('/login', [AuthController::class, 'loginForm'])->name('login.form');
+Route::get('/logout', [AuthController::class, 'logout']);
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['prefix' => 'admin', 'namespace' => 'App\Http\Controllers\Admin'], function() {
     Route::get('/', 'DashboardController@index');
